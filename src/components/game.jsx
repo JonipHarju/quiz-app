@@ -24,6 +24,9 @@ export default function Game() {
     if (questionsAsked === 10) {
       alert(`Game ended! :O Your score was ${score}`);
       console.log("game end");
+      setScore(0);
+      setQuestionsAsked(0);
+
       // here logic to upload the score to firebase with the username
     }
   }, [questionsAsked]);
