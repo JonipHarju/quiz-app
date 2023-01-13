@@ -1,0 +1,1 @@
+{"version":3,"file":"static/css/main.e1671065.css","mappings":"AAAA,KACE,qBAAuB,CACvB,UAAW,CACX,cACF","sources":["style.css"],"sourcesContent":["body {\n  background-color: black;\n  color: lime;\n  font-size: 2rem;\n}\n"],"names":[],"sourceRoot":""}
