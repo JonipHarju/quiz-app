@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./style.css";
 import shuffleArray from "./components/ShuffleArray";
 import uniqid from "uniqid";
+import failure from "./sounds/failure.mp3";
+import correct from "./sounds/correct.mp3";
 
 const url = "https://opentdb.com/api.php?amount=1&category=15&type=multiple";
 
@@ -10,6 +12,10 @@ export default function App() {
   const [answers, setAnswers] = useState([]);
   const [correctAnswer, setCorrectAnswer] = useState([]);
   const [score, setScore] = useState(0);
+
+  useEffect(() => {
+    fetchQuestions();
+  }, []);
 
   function fetchQuestions() {
     //f fetching the question from the API
@@ -37,15 +43,24 @@ export default function App() {
     });
   }
 
+  function playCorrectAnswer() {
+    new Audio(correct).play();
+  }
+
+  function playFailureAnswer() {
+    new Audio(failure).play();
+  }
+
   return (
     <div>
-      <button
+      <h1>Score:{score}</h1>
+      {/* <button
         onClick={() => {
           fetchQuestions();
         }}
       >
         get question!
-      </button>
+      </button> */}
       <h1>{question}</h1>
       <ul>
         {answers.map((value) => {
@@ -55,11 +70,13 @@ export default function App() {
                 onClick={(e) => {
                   console.log(e, correctAnswer[0]);
                   if (e.target.outerText === correctAnswer[0]) {
-                    alert("holy fuck boiii right answer");
+                    playCorrectAnswer();
+                    // alert("holy fuck boiii right answer");
                     setScore((previousState) => previousState + 1);
                     fetchQuestions();
                   } else {
-                    alert("lolololo wrong answer hobo");
+                    playFailureAnswer();
+                    // alert("lolololo wrong answer hobo");
                     fetchQuestions();
                   }
                 }}
@@ -70,9 +87,7 @@ export default function App() {
           );
         })}
       </ul>
-      <p>
-        {correctAnswer} Score:{score}
-      </p>
+      <p>{correctAnswer}</p>
     </div>
   );
 }
