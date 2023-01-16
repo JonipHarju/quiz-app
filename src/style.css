@@ -3,3 +3,36 @@ body {
   color: lime;
   font-size: 2rem;
 }
+
+.modal {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(121, 121, 66, 0.5);
+  opacity: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalContent {
+  width: 500px;
+  background-color: black;
+}
+
+.modalHeader,
+.modalFooter {
+  padding: 10px;
+}
+
+.modalTitle {
+  margin: 0;
+}
+
+.modalBody {
+  padding: 10px;
+  border-top: 1px solid white;
+  border-bottom: 1px solid white;
+}

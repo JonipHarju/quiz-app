@@ -4,6 +4,7 @@ import shuffleArray from "./ShuffleArray";
 import uniqid from "uniqid";
 import failure from "../sounds/failure.mp3";
 import correct from "../sounds/correct.mp3";
+import Modal from "./Modal";
 
 const url =
   "https://opentdb.com/api.php?amount=1&category=15&difficulty=easy&type=multiple";
@@ -15,6 +16,7 @@ export default function Game() {
   const [questionsAsked, setQuestionsAsked] = useState(0);
   const [score, setScore] = useState(0);
   const [skips, setSkips] = useState(3);
+  const [show, setShow] = useState(false);
 
   useEffect(() => {
     fetchQuestions();
@@ -22,12 +24,7 @@ export default function Game() {
 
   useEffect(() => {
     if (questionsAsked === 10) {
-      alert(`Game ended! :O Your score was ${score}`);
-      console.log("game end");
-      setScore(0);
-      setQuestionsAsked(0);
-
-      // here logic to upload the score to firebase with the username
+      setShow(true);
     }
   }, [questionsAsked]);
 
@@ -38,14 +35,43 @@ export default function Game() {
         // mapping trough the data
         response.results.map(() => {
           // setting the question into the state
-          setQuestion(response.results[0].question.replace(/&quot;/g, '"'));
+          setQuestion(
+            response.results[0].question
+              .replace(/&amp;/g, "&")
+              .replace(/&lt;/g, "<")
+              .replace(/&gt;/g, ">")
+              .replace(/&quot;/g, `"`)
+              .replace(/&#039;/g, "'")
+              .replace(/&eacute;/g, "é")
+              .replace(/&rsquo;/g, "´")
+          );
           // creating two arrays in which we put the wrong answers and the right answer
-          const incorrectAnswers = response.results[0].incorrect_answers;
-          const correctAnswer = [response.results[0].correct_answer];
+          const incorrectAnswersRaw = response.results[0].incorrect_answers;
 
-          // combine the above arrays to form array with all the answers.
+          // creating a version of the wrong answers with right symbols
+          const incorrectAnswers = incorrectAnswersRaw.map((i) => {
+            return i
+              .replace(/&amp;/g, "&")
+              .replace(/&lt;/g, "<")
+              .replace(/&gt;/g, ">")
+              .replace(/&quot;/g, `"`)
+              .replace(/&#039;/g, "'")
+              .replace(/&eacute;;/g, "é");
+          });
+          // array with correnct answer
+          const correctAnswer = [
+            response.results[0].correct_answer
+              .replace(/&amp;/g, "&")
+              .replace(/&lt;/g, "<")
+              .replace(/&gt;/g, ">")
+              .replace(/&quot;/g, `"`)
+              .replace(/&#039;/g, "'")
+              .replace(/&eacute;;/g, "é"),
+          ];
+
+          // combine wrong answers array with the right answer to create a single array
           const allAnswers = incorrectAnswers.concat(correctAnswer);
-
+          // shuffle the combined array and make it the state.
           setAnswers(shuffleArray(allAnswers));
           setCorrectAnswer(correctAnswer);
         });
@@ -59,6 +85,14 @@ export default function Game() {
 
   function playFailureAnswer() {
     new Audio(failure).play();
+  }
+
+  function resetGame() {
+    setShow(false);
+    setScore(0);
+    setSkips(3);
+
+    setQuestionsAsked(0);
   }
 
   return (
@@ -113,8 +147,8 @@ export default function Game() {
       >
         Skip
       </button>
-      <p>{correctAnswer}</p>
       <p>questions asked:{questionsAsked}</p>
+      <Modal onClose={resetGame} show={show} score={score} />
     </div>
   );
 }
